@@ -91,9 +91,6 @@ int main(void)
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
-        // Update
-        //----------------------------------------------------------------------------------
-        camDirectionRight = Vector3Normalize(Vector3CrossProduct(camDirection, camera.up));
 
         // Procesamiento de los inputs
         if (IsKeyPressed(KEY_R))
@@ -118,18 +115,27 @@ int main(void)
         {
             camera.position = Vector3Add(camera.position, Vector3Scale(camDirectionRight, camSpeed * GetFrameTime()));
         }
-        if (IsKeyDown(KEY_Q))
+        if (IsKeyDown(KEY_SPACE))
         {
             camera.position.y += camSpeed * GetFrameTime();
         }
-        if (IsKeyDown(KEY_E))
+        if (IsKeyDown(KEY_LEFT_CONTROL ))
         {
             camera.position.y -= camSpeed * GetFrameTime();
         }
 
+        // Update
+       //----------------------------------------------------------------------------------
+        camDirectionRight = Vector3Normalize(Vector3CrossProduct(camDirection, camera.up));
         Vector2 mouseDelta = GetMouseDelta();
-        Matrix rotation = MatrixRotateXYZ((Vector3) { mouseDelta.y * -0.005f, mouseDelta.x * -0.005f, 0 });
-        camDirection = Vector3Transform(camDirection, rotation);
+        //Matrix rotation = MatrixRotateXYZ((Vector3) { mouseDelta.y * -0.005f, mouseDelta.x * -0.005f, 0 });
+        //camDirection = Vector3Transform(camDirection, rotation);
+        float pitch = -mouseDelta.y * 0.1 * GetFrameTime();
+        camDirection = Vector3RotateByAxisAngle(camDirection, camDirectionRight, pitch);
+        camera.target = Vector3Add(camera.position, camDirection);
+        float yaw = -mouseDelta.x * 0.1 * GetFrameTime();
+        camDirection = Vector3RotateByAxisAngle(camDirection, camera.up, yaw);
+        camera.target = Vector3Add(camera.position, camDirection);
 
         camera.target = Vector3Add(camera.position, camDirection);
 
